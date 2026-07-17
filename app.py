@@ -24,8 +24,8 @@ st.markdown("""
         padding: 20px;
         border-radius: 12px;
         text-align: center;
-        border: 1px solid rgba(255, 69, 0, 0.2);
-        box-shadow: 0 0 15px rgba(255, 69, 0, 0.1);
+        border: 1px solid rgba(255, 61, 0, 0.2);
+        box-shadow: 0 0 15px rgba(255, 61, 0, 0.1);
         margin-bottom: 15px;
     }
     .metric-title { 
@@ -35,10 +35,10 @@ st.markdown("""
         margin-bottom: 5px; 
     }
     .metric-value { 
-        color: #ff4500; 
+        color: #ff3d00; 
         font-size: 32px; 
         font-weight: bold; 
-        text-shadow: 0 0 10px rgba(255, 69, 0, 0.3);
+        text-shadow: 0 0 10px rgba(255, 61, 0, 0.4);
     }
     
     /* Destaque especial em Verde Neon para a Taxa de Aproveitamento */
@@ -47,15 +47,15 @@ st.markdown("""
         padding: 20px;
         border-radius: 12px;
         text-align: center;
-        border: 1px solid rgba(0, 255, 102, 0.2);
-        box-shadow: 0 0 15px rgba(0, 255, 102, 0.1);
+        border: 1px solid rgba(0, 255, 0, 0.2);
+        box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
         margin-bottom: 15px;
     }
     .metric-value-green { 
-        color: #00ff66; 
+        color: #00ff00; 
         font-size: 32px; 
         font-weight: bold; 
-        text-shadow: 0 0 10px rgba(0, 255, 102, 0.4);
+        text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
     }
     
     /* Customização dos Títulos */
@@ -72,7 +72,7 @@ st.markdown("""
     /* Elementos da barra lateral */
     section[data-testid="stSidebar"] {
         background-color: #111422 !important;
-        border-right: 1px solid rgba(255, 69, 0, 0.15);
+        border-right: 1px solid rgba(255, 61, 0, 0.15);
     }
     </style>
 """, unsafe_allow_html=True)
@@ -111,7 +111,7 @@ try:
         df['Mês'] = df['Mes_Num'].map(meses_map)
 
         # 🎯 BARRA LATERAL (FILTROS)
-        st.sidebar.markdown("<h2 style='color:#ff4500; font-size:22px; text-shadow: 0 0 8px rgba(255,69,0,0.3);'>🎯 Filtros</h2>", unsafe_allow_html=True)
+        st.sidebar.markdown("<h2 style='color:#ff3d00; font-size:22px; text-shadow: 0 0 8px rgba(255,61,0,0.3);'>🎯 Filtros</h2>", unsafe_allow_html=True)
         
         meses_disponiveis = ["Todos"] + sorted(list(df['Mês'].dropna().unique()), key=lambda m: list(meses_map.values()).index(m))
         mes_selecionado = st.sidebar.selectbox("📅 Escolha o Mês", meses_disponiveis)
@@ -137,7 +137,7 @@ try:
         with col1:
             st.markdown(f'<div class="metric-box"><div class="metric-title">Respondidas</div><div class="metric-value">{total_questoes}</div></div>', unsafe_allow_html=True)
         with col2:
-            st.markdown(f'<div class="metric-box"><div class="metric-title">Acertos</div><div class="metric-value" style="color:#00ff66; text-shadow: 0 0 10px rgba(0,255,102,0.3);">{total_acertos}</div></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="metric-box"><div class="metric-title">Acertos</div><div class="metric-value" style="color:#00ff00; text-shadow: 0 0 10px rgba(0,255,0,0.4);">{total_acertos}</div></div>', unsafe_allow_html=True)
         with col3:
             st.markdown(f'<div class="metric-box"><div class="metric-title">Erros</div><div class="metric-value">{total_erros}</div></div>', unsafe_allow_html=True)
         with col4:
@@ -154,23 +154,23 @@ try:
         
         st.write("---")
         
-        # 📈 Gráfico de Área para Frequência Diária (Datas corrigidas em PT-BR)
+        # 📈 CORRIGIDO: Gráfico de Barras Verticais para a Frequência Diária (Muito mais limpo e legível)
         st.subheader("📈 Frequência de Estudos (Questões por Dia)")
         df_frequencia = df_filtrado.copy()
         df_frequencia['Data'] = df_frequencia['data_criacao'].dt.strftime('%d/%m')
         
         df_frequencia_agrupada = df_frequencia.groupby(['data_criacao', 'Data']).size().reset_index(name="Questões Respondidas")
         df_frequencia_agrupada = df_frequencia_agrupada.sort_values('data_criacao')
-        df_area = df_frequencia_agrupada.set_index('Data')["Questões Respondidas"]
+        df_barras_frequencia = df_frequencia_agrupada.set_index('Data')["Questões Respondidas"]
         
-        if not df_area.empty:
-            st.area_chart(df_area, color="#00ff66")
+        if not df_barras_frequencia.empty:
+            st.bar_chart(df_barras_frequencia, color="#00ff00")
         else:
             st.info("Sem dados de histórico para exibir neste período.")
             
         st.write("---")
         
-        # 📊 Gráfico de Rendimento por Disciplina (Lindo, Limpo e Proporcional)
+        # 📊 Gráfico de Rendimento por Disciplina
         st.subheader("📚 Proporção de Rendimento por Disciplina")
         df_agrupado = df_filtrado.groupby(['materia', 'acertou']).size().unstack(fill_value=0)
         
@@ -178,8 +178,7 @@ try:
         if False not in df_agrupado.columns: df_agrupado[False] = 0
         df_agrupado = df_agrupado.rename(columns={True: 'Acertos', False: 'Erros'})
         
-        # O empilhamento limpo permite ver o tamanho do bloco verde contra o bloco vermelho
-        st.bar_chart(df_agrupado, stack=True, color=["#00ff66", "#ff4500"])
+        st.bar_chart(df_agrupado, stack=True, color=["#00ff00", "#ff3d00"])
 
         st.write("---")
 
