@@ -1,10 +1,12 @@
-# estudos-ia-vunesp
+# <p align="center"><font color="#E0533C">estudos-ia-vunesp</font></p>
 
-Simulador de questões inéditas da banca Vunesp utilizando Llama 3.3 (Groq), persistência de dados no Supabase e dashboard analítico em tempo real no Power BI Mobile.
+<p align="center">
+  <strong>Simulador de questões inéditas da banca Vunesp utilizando Llama 3.3 (Groq), persistência de dados no Supabase e dashboard analítico em tempo real no Power BI Mobile.</strong>
+</p>
 
 ---
 
-## 📁 Estrutura do Repositório
+## <font color="#E0533C">📁 Estrutura do Repositório</font>
 
 ```text
 📁 estudos-ia-vunesp (Raiz do seu GitHub)
