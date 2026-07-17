@@ -58,14 +58,6 @@ st.markdown("""
         text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
     }
     
-    /* 🎯 CORREÇÃO DA BARRA: Altera apenas a cor do preenchimento de forma limpa */
-    div[data-testid="stProgress"] div div {
-        background-color: #ff3d00 !important;
-    }
-    div[role="progressbar"] > div {
-        background-color: #ff3d00 !important;
-    }
-    
     /* Customização dos Títulos */
     h1, h2, h3, h4, h5, h6 {
         color: #ffffff !important;
@@ -81,6 +73,24 @@ st.markdown("""
     section[data-testid="stSidebar"] {
         background-color: #111422 !important;
         border-right: 1px solid rgba(255, 61, 0, 0.15);
+    }
+
+    /* Estilo da nossa própria barra de progresso customizada */
+    .custom-progress-bg {
+        background-color: #221414;
+        border-radius: 8px;
+        width: 100%;
+        height: 12px;
+        margin-bottom: 10px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 61, 0, 0.1);
+    }
+    .custom-progress-bar {
+        background-color: #ff3d00;
+        height: 100%;
+        border-radius: 8px;
+        box-shadow: 0 0 8px rgba(255, 61, 0, 0.5);
+        transition: width 0.5s ease-in-out;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -154,11 +164,18 @@ try:
         
         st.write("---")
         
-        # 🎯 META SEMANAL (Corrigida sem duplicar linhas)
+        # 🎯 META SEMANAL (Reconstruída de forma nativa e precisa)
         st.subheader("🎯 Meta de Consistência Semanal")
         meta_semanal = 100
-        progresso = min(total_questoes / meta_semanal, 1.0)
-        st.progress(progresso)
+        porcentagem_progresso = min((total_questoes / meta_semanal) * 100, 100.0)
+        
+        # Renderiza a barra calculando a largura dinamicamente via HTML seguro
+        st.markdown(f"""
+            <div class="custom-progress-bg">
+                <div class="custom-progress-bar" style="width: {porcentagem_progresso}%;"></div>
+            </div>
+        """, unsafe_allow_html=True)
+        
         st.markdown(f"Você realizou **{total_questoes}** de uma meta de **{meta_semanal}** questões esta semana.")
         
         st.write("---")
@@ -170,7 +187,7 @@ try:
         
         df_frequencia_agrupada = df_frequencia.groupby(['data_criacao', 'Data']).size().reset_index(name="Questões Respondidas")
         df_frequencia_agrupada = df_frequencia_agrupada.sort_values('data_criacao')
-        df_barras_frequencia = df_frequencia_agras = df_frequencia_agrupada.set_index('Data')["Questões Respondidas"]
+        df_barras_frequencia = df_frequencia_agrupada.set_index('Data')["Questões Respondidas"]
         
         if not df_barras_frequencia.empty:
             st.bar_chart(df_barras_frequencia, color="#00ff00")
