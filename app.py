@@ -58,29 +58,12 @@ st.markdown("""
         text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
     }
     
-    /* 🎯 CUSTOMIZAÇÃO AVANÇADA DA BARRA DE PROGRESSO STREMLIT */
-    /* 1. Altera a cor de fundo (Trilho/Restante da Meta) para Vermelho Escuro */
-    div[data-testid="stProgress"] > div {
-        background-color: #4a1100 !important;
-        border-radius: 10px;
-    }
-    div[role="progressbar"] {
-        background-color: #4a1100 !important;
-        border-radius: 10px;
-    }
-    
-    /* 2. Altera a cor do preenchimento (Progresso Atual) para Vermelho Claro Fluorescente */
+    /* 🎯 CORREÇÃO DA BARRA: Altera apenas a cor do preenchimento de forma limpa */
     div[data-testid="stProgress"] div div {
         background-color: #ff3d00 !important;
-        border-radius: 10px;
-    }
-    .stProgress > div > div > div > div {
-        background-color: #ff3d00 !important;
-        border-radius: 10px;
     }
     div[role="progressbar"] > div {
         background-color: #ff3d00 !important;
-        border-radius: 10px;
     }
     
     /* Customização dos Títulos */
@@ -171,7 +154,7 @@ try:
         
         st.write("---")
         
-        # 🎯 META SEMANAL (Preenchimento Vermelho Claro sobre base Vermelho Escuro)
+        # 🎯 META SEMANAL (Corrigida sem duplicar linhas)
         st.subheader("🎯 Meta de Consistência Semanal")
         meta_semanal = 100
         progresso = min(total_questoes / meta_semanal, 1.0)
@@ -187,7 +170,7 @@ try:
         
         df_frequencia_agrupada = df_frequencia.groupby(['data_criacao', 'Data']).size().reset_index(name="Questões Respondidas")
         df_frequencia_agrupada = df_frequencia_agrupada.sort_values('data_criacao')
-        df_barras_frequencia = df_frequencia_agrupada.set_index('Data')["Questões Respondidas"]
+        df_barras_frequencia = df_frequencia_agras = df_frequencia_agrupada.set_index('Data')["Questões Respondidas"]
         
         if not df_barras_frequencia.empty:
             st.bar_chart(df_barras_frequencia, color="#00ff00")
