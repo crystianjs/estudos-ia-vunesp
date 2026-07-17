@@ -7,16 +7,18 @@ Simulador de questões inéditas da banca Vunesp utilizando Llama 3.3 (Groq), pe
 ## 📁 Estrutura do Repositório
 
 ```text
-📁 estudos-ia-vunesp
-├── 📁 .github/                  # Configurações do GitHub (opcional)
-│   └── workflow.yml
-├── 📁 src/                      # Código-fonte do simulador (Google Apps Script)
-│   ├── Código.gs                # Regras de negócio, conexão JDBC e integração Groq/Gemini
-│   └── Index.html               # Interface web responsiva (HTML/CSS/JS)
-├── 📁 database/                 # Modelagem do Banco de Dados (Supabase)
-│   └── schema.sql               # Script SQL de criação da tabela 'resultados' e RLS
-├── 📁 power-bi/                 # Pasta do Relatório de Desempenho
-│   └── EstudosAI.pbix           # Arquivo do relatório Power BI Desktop
-├── 📄 .gitignore                # Arquivo para ignorar arquivos desnecessários
-├── 📄 LICENSE                   # Licença do projeto (ex: MIT)
-└── 📄 README.md                 # Apresentação, passo a passo de instalação e prints
+📁 estudos-ia-vunesp (Raiz do seu GitHub)
+└── 📁 estudos-ia-vunesp/            # Pasta principal do projeto
+    ├── 📁 .github/                  # Configurações do GitHub
+    │   └── workflow.yml
+    ├── 📁 Database/                 # Modelagem do Banco de Dados
+    │   └── schema.sql               
+    ├── 📁 Src/                      # Código-fonte do simulador
+    │   ├── 📁 Backend/              # Scripts de backend (Google Apps Script)
+    │   │   └── codigo.gs            
+    │   └── 📁 Frontend/             # Interface web do simulador
+    │       └── index.html           
+    └── 📁 power-bi/screenshots/     # Pasta do Relatório de Desempenho e Imagens
+        ├── UIUX.png                 # Print de interface UX/UI
+        ├── dash_1_mobile_depois.png # Dashboard Mobile - Resultado Final
+        └── dash_1_desktop_depois.jpg # Dashboard Desktop - Resultado Final
