@@ -10,22 +10,22 @@ st.set_page_config(
     layout="centered"
 )
 
-# Estilização baseada na paleta Deep Blue / Cyber Blue do projeto
+# Estilização Neon Dark com Vermelho-Alaranjado (EstudosIA)
 st.markdown("""
     <style>
-    /* Cor de fundo do app (Azul Escuro profundo) */
+    /* Cor de fundo do app (Preto/Azul escuro profundo) */
     .stApp {
-        background-color: #0b0f19;
+        background-color: #090d16;
     }
     
-    /* Configuração dos Cards de Métricas */
+    /* Configuração dos Cards de Métricas com brilho neon vermelho-alaranjado */
     .metric-box {
-        background-color: #111827;
+        background-color: #111422;
         padding: 20px;
         border-radius: 12px;
         text-align: center;
-        border: 1px solid rgba(0, 149, 255, 0.2);
-        box-shadow: 0 4px 20px rgba(0, 149, 255, 0.05);
+        border: 1px solid rgba(255, 69, 0, 0.3);
+        box-shadow: 0 0 15px rgba(255, 69, 0, 0.15);
         margin-bottom: 15px;
     }
     .metric-title { 
@@ -35,10 +35,10 @@ st.markdown("""
         margin-bottom: 5px; 
     }
     .metric-value { 
-        color: #0095ff; 
+        color: #ff4500; 
         font-size: 32px; 
         font-weight: bold; 
-        text-shadow: 0 0 10px rgba(0, 149, 255, 0.2);
+        text-shadow: 0 0 10px rgba(255, 69, 0, 0.4);
     }
     
     /* Customização dos Títulos */
@@ -54,8 +54,8 @@ st.markdown("""
     
     /* Elementos da barra lateral */
     section[data-testid="stSidebar"] {
-        background-color: #111827 !important;
-        border-right: 1px solid rgba(0, 149, 255, 0.1);
+        background-color: #111422 !important;
+        border-right: 1px solid rgba(255, 69, 0, 0.2);
     }
     </style>
 """, unsafe_allow_html=True)
@@ -95,7 +95,7 @@ try:
         df['Mês'] = df['Mes_Num'].map(meses_map)
 
         # 🎯 CRIAÇÃO DA BARRA LATERAL COM OS FILTROS
-        st.sidebar.markdown("<h2 style='color:#0095ff; font-size:22px;'>🎯 Filtros</h2>", unsafe_allow_html=True)
+        st.sidebar.markdown("<h2 style='color:#ff4500; font-size:22px; text-shadow: 0 0 8px rgba(255,69,0,0.3);'>🎯 Filtros</h2>", unsafe_allow_html=True)
         
         # Filtro de Mês
         meses_disponiveis = ["Todos"] + sorted(list(df['Mês'].dropna().unique()), key=lambda m: list(meses_map.values()).index(m))
@@ -131,7 +131,7 @@ try:
         
         st.write("---")
         
-        # 📊 Gráfico de barras interativo por matéria (Ciano e Azul Escuro)
+        # 📊 Gráfico de barras interativo por matéria (Vermelho-Alaranjado Neon e Cinza Escuro)
         st.subheader("📚 Gráfico de Rendimento por Disciplina")
         df_agrupado = df_filtrado.groupby(['materia', 'acertou']).size().unstack(fill_value=0)
         
@@ -140,8 +140,8 @@ try:
         if False not in df_agrupado.columns: df_agrupado[False] = 0
         df_agrupado = df_agrupado.rename(columns={True: 'Acertos', False: 'Erros'})
         
-        # Cores Cyber Blue combinando com a imagem técnica
-        st.bar_chart(df_agrupado, stack=True, color=["#00f0ff", "#1d3557"])
+        # Cores: Vermelho Alaranjado para Acertos e Azul Cinza para Erros
+        st.bar_chart(df_agrupado, stack=True, color=["#ff4500", "#2e3b4e"])
 
         st.write("---")
 
