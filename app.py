@@ -75,7 +75,7 @@ st.markdown("""
         border-right: 1px solid rgba(255, 61, 0, 0.15);
     }
 
-    /* Estilo da nossa própria barra de progresso customizada */
+    /* Estilo da barra de progresso customizada */
     .custom-progress-bg {
         background-color: #221414;
         border-radius: 8px;
@@ -95,7 +95,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Título customizado com HTML para aplicar o contraste do logotipo (Estudos em branco, IA em vermelho)
+# Título customizado com HTML para aplicar o contraste do logotipo
 st.markdown('<h1 style="font-size: 40px; font-weight: 800; margin-bottom: 0px;">📊 Estudos<span style="color:#ff3d00;">IA</span> - Dashboard</h1>', unsafe_allow_html=True)
 st.caption("Filtros avançados e análise simplificada por período e disciplina.")
 
@@ -164,12 +164,11 @@ try:
         
         st.write("---")
         
-        # 🎯 META SEMANAL (Reconstruída de forma nativa e precisa)
+        # 🎯 META SEMANAL
         st.subheader("🎯 Meta de Consistência Semanal")
         meta_semanal = 100
         porcentagem_progresso = min((total_questoes / meta_semanal) * 100, 100.0)
         
-        # Renderiza a barra calculando a largura dinamicamente via HTML seguro
         st.markdown(f"""
             <div class="custom-progress-bg">
                 <div class="custom-progress-bar" style="width: {porcentagem_progresso}%;"></div>
@@ -180,8 +179,12 @@ try:
         
         st.write("---")
         
-        # 📈 Gráfico de Barras Verticais para a Frequência Diária
-        st.subheader("📈 Frequência de Estudos (Questões por Dia)")
+        # 📈 TEXTO DINÂMICO CONFORME SOLICITADO: Vincula a matéria e o mês selecionado direto ao título do gráfico
+        texto_materia = "Geral" if materia_selecionada == "Todas" else materia_selecionada
+        texto_mes = "Todos os Meses" if mes_selecionado == "Todos" else mes_selecionado
+        
+        st.subheader(f"📈 Frequência de Estudos - {texto_materia} ({texto_mes})")
+        
         df_frequencia = df_filtrado.copy()
         df_frequencia['Data'] = df_frequencia['data_criacao'].dt.strftime('%d/%m')
         
@@ -192,7 +195,7 @@ try:
         if not df_barras_frequencia.empty:
             st.bar_chart(df_barras_frequencia, color="#00ff00")
         else:
-            st.info("Sem dados de histórico para exibir neste período.")
+            st.info("Sem dados de histórico para exibir neste período com os filtros atuais.")
             
         st.write("---")
         
