@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import psycopg2
 import os
+import datetime
 
 # Configuração da página para visualização mobile e desktop
 st.set_page_config(
@@ -39,6 +40,32 @@ st.markdown("""
         font-size: 32px; 
         font-weight: bold; 
         text-shadow: 0 0 10px rgba(255, 61, 0, 0.4);
+    }
+    
+    /* Card Gigante Personalizado conforme o Anexo */
+    .big-metric-box {
+        background-color: #111422;
+        padding: 40px 20px;
+        border-radius: 16px;
+        text-align: center;
+        border: 1px solid rgba(255, 61, 0, 0.25);
+        box-shadow: 0 0 25px rgba(255, 61, 0, 0.15);
+        margin: 20px auto;
+        max-width: 500px;
+    }
+    .big-metric-title {
+        color: #94a3b8;
+        font-size: 22px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        letter-spacing: 0.5px;
+    }
+    .big-metric-value {
+        color: #ff3d00;
+        font-size: 72px;
+        font-weight: 800;
+        text-shadow: 0 0 20px rgba(255, 61, 0, 0.6);
+        line-height: 1;
     }
     
     /* Destaque especial em Verde Neon para a Taxa de Aproveitamento */
@@ -179,24 +206,20 @@ try:
         
         st.write("---")
         
-        # 📈 INDEPENDENTE DE FILTRO: Mostra sempre o progresso absoluto dos meses do ano
-        st.subheader("📈 Evolução de Estudos por Mês (Histórico Geral)")
+        # 📦 SUBSTITUÍDO: Card Neon Gigante Isolado (Ignora filtros e calcula o mês vigente automaticamente)
+        mes_atual_num = datetime.datetime.now().month
+        questoes_do_mes_atual = df[df['Mes_Num'] == mes_atual_num].shape[0]
         
-        # Aqui usamos o DataFrame original 'df', ignorando qualquer filtro ativo na lateral
-        df_agrupado_mes = df.groupby(['Mes_Num', 'Mês']).size().reset_index(name="Questões")
-        df_agrupado_mes = df_agrupado_mes.sort_values('Mes_Num')
-        df_grafico_mes = df_agrupado_mes.set_index('Mês')["Questões"]
-        
-        if not df_grafico_mes.empty:
-            st.bar_chart(df_grafico_mes, color="#00ff00")
-            meta_mensal_esperada = 400
-            st.markdown(f"💡 *Nota de Acompanhamento: A linha ideal de consistência é de **{meta_mensal_esperada} questões** por mês.*")
-        else:
-            st.info("Nenhum dado encontrado no banco de dados.")
+        st.markdown(f"""
+            <div class="big-metric-box">
+                <div class="big-metric-title">Número de questão no mês</div>
+                <div class="big-metric-value">{questoes_do_mes_atual}</div>
+            </div>
+        """, unsafe_allow_html=True)
             
         st.write("---")
         
-        # 📊 Gráfico de Rendimento por Disciplina (Este continua respeitando os filtros)
+        # 📊 Gráfico de Rendimento por Disciplina
         st.subheader("📚 Proporção de Rendimento por Disciplina")
         df_agrupado = df_filtrado.groupby(['materia', 'acertou']).size().unstack(fill_value=0)
         
