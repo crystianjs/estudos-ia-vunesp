@@ -24,8 +24,8 @@ st.markdown("""
         padding: 20px;
         border-radius: 12px;
         text-align: center;
-        border: 1px solid rgba(255, 69, 0, 0.2);
-        box-shadow: 0 0 15px rgba(255, 69, 0, 0.1);
+        border: 1px solid rgba(255, 61, 0, 0.2);
+        box-shadow: 0 0 15px rgba(255, 61, 0, 0.1);
         margin-bottom: 15px;
     }
     .metric-title { 
@@ -35,27 +35,27 @@ st.markdown("""
         margin-bottom: 5px; 
     }
     .metric-value { 
-        color: #ff4500; 
+        color: #ff3d00; 
         font-size: 32px; 
         font-weight: bold; 
-        text-shadow: 0 0 10px rgba(255, 69, 0, 0.3);
+        text-shadow: 0 0 10px rgba(255, 61, 0, 0.3);
     }
     
-    /* Destaque especial em Verde Neon para a Taxa de Aproveitamento */
+    /* Destaque especial em Verde para a Taxa de Aproveitamento */
     .metric-box-green {
         background-color: #111422;
         padding: 20px;
         border-radius: 12px;
         text-align: center;
-        border: 1px solid rgba(0, 255, 102, 0.2);
-        box-shadow: 0 0 15px rgba(0, 255, 102, 0.1);
+        border: 1px solid rgba(0, 230, 118, 0.2);
+        box-shadow: 0 0 15px rgba(0, 230, 118, 0.1);
         margin-bottom: 15px;
     }
     .metric-value-green { 
-        color: #00ff66; 
+        color: #00e676; 
         font-size: 32px; 
         font-weight: bold; 
-        text-shadow: 0 0 10px rgba(0, 255, 102, 0.4);
+        text-shadow: 0 0 10px rgba(0, 230, 118, 0.4);
     }
     
     /* Customização dos Títulos */
@@ -72,7 +72,7 @@ st.markdown("""
     /* Elementos da barra lateral */
     section[data-testid="stSidebar"] {
         background-color: #111422 !important;
-        border-right: 1px solid rgba(255, 69, 0, 0.15);
+        border-right: 1px solid rgba(255, 61, 0, 0.15);
     }
     </style>
 """, unsafe_allow_html=True)
@@ -103,15 +103,15 @@ try:
         
         # Mapeamento de meses para o português
         meses_map = {
-            1: "Janeiro", 2: "Fevereiro", 3: "Março", 4: "Abril",
-            5: "Maio", 6: "Junho", 7: "Julho", 8: "Agosto",
-            9: "Setembro", 10: "Outubro", 11: "Novembro", 12: "Dezembro"
+            1: "janeiro", 2: "fevereiro", 3: "março", 4: "abril",
+            5: "maio", 6: "junho", 7: "julho", 8: "agosto",
+            9: "setembro", 10: "outubro", 11: "novembro", 12: "dezembro"
         }
         df['Mes_Num'] = df['data_criacao'].dt.month
         df['Mês'] = df['Mes_Num'].map(meses_map)
 
         # 🎯 BARRA LATERAL (FILTROS 100% EM PORTUGUÊS)
-        st.sidebar.markdown("<h2 style='color:#ff4500; font-size:22px; text-shadow: 0 0 8px rgba(255,69,0,0.3);'>🎯 Filtros</h2>", unsafe_allow_html=True)
+        st.sidebar.markdown("<h2 style='color:#ff3d00; font-size:22px; text-shadow: 0 0 8px rgba(255,61,0,0.3);'>🎯 Filtros</h2>", unsafe_allow_html=True)
         
         meses_disponiveis = ["Todos"] + sorted(list(df['Mês'].dropna().unique()), key=lambda m: list(meses_map.values()).index(m))
         mes_selecionado = st.sidebar.selectbox("📅 Escolha o Mês", meses_disponiveis)
@@ -137,7 +137,7 @@ try:
         with col1:
             st.markdown(f'<div class="metric-box"><div class="metric-title">Respondidas</div><div class="metric-value">{total_questoes}</div></div>', unsafe_allow_html=True)
         with col2:
-            st.markdown(f'<div class="metric-box"><div class="metric-title">Acertos</div><div class="metric-value" style="color:#00ff66; text-shadow: 0 0 10px rgba(0,255,102,0.3);">{total_acertos}</div></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="metric-box"><div class="metric-title">Acertos</div><div class="metric-value" style="color:#00e676; text-shadow: 0 0 10px rgba(0,230,118,0.3);">{total_acertos}</div></div>', unsafe_allow_html=True)
         with col3:
             st.markdown(f'<div class="metric-box"><div class="metric-title">Erros</div><div class="metric-value">{total_erros}</div></div>', unsafe_allow_html=True)
         with col4:
@@ -154,33 +154,39 @@ try:
         
         st.write("---")
         
-        # 📈 ALTERADO: Gráfico de Área para Frequência Diária (100% em português)
+        # 📈 Gráfico de Área para Frequência Diária com datas em português
         st.subheader("📈 Frequência de Estudos (Questões por Dia)")
         df_frequencia = df_filtrado.copy()
-        df_frequencia['Data'] = df_frequencia['data_criacao'].dt.date
-        df_area = df_frequencia.groupby('Data').size().rename("Questões Respondidas")
+        
+        # Formata a data diretamente para texto em português (Ex: 17/07) para evitar eixos em inglês
+        df_frequencia['Data'] = df_frequencia['data_criacao'].dt.strftime('%d/%m')
+        
+        # Agrupa mantendo a ordem correta dos dias
+        df_frequencia_agrupada = df_frequencia.groupby(['data_criacao', 'Data']).size().reset_index(name="Questões Respondidas")
+        df_frequencia_agrupada = df_frequencia_agrupada.sort_values('data_criacao')
+        df_area = df_frequencia_agrupada.set_index('Data')["Questões Respondidas"]
         
         if not df_area.empty:
-            st.area_chart(df_area, color="#00ff66")
+            st.area_chart(df_area, color="#00e676")
         else:
             st.info("Sem dados de histórico para exibir neste período.")
             
         st.write("---")
         
-        # 📊 ALTERADO: Gráfico de barras Lado a Lado (stack=False)
+        # 📊 Gráfico de barras Lado a Lado (Cores oficiais do Gráfico Antigo)
         st.subheader("📚 Comparativo de Rendimento por Disciplina")
         df_agrupado = df_filtrado.groupby(['materia', 'acertou']).size().unstack(fill_value=0)
         
         if True not in df_agrupado.columns: df_agrupado[True] = 0
         if False not in df_agrupado.columns: df_agrupado[False] = 0
-        df_agrupado = df_agrupado.rename(columns={True: 'Acertos', False: 'Erros'})
+        df_agrupado = df_agrupado.rename(columns={True: 'Verdadeiro', False: 'Falso'})
         
-        # stack=False coloca as barras uma do lado da outra
-        st.bar_chart(df_agrupado, stack=False, color=["#00ff66", "#ff4500"])
+        # Injetando as cores exatas da rosácea: Verde (`#00e676`) e Vermelho (`#ff3d00`)
+        st.bar_chart(df_agrupado, stack=False, color=["#00e676", "#ff3d00"])
 
         st.write("---")
 
-        # 📋 TABELA ALTERADA: Sem a coluna de Aproveitamento
+        # 📋 Tabela de Detalhamento
         st.subheader("📝 Detalhamento por Disciplina")
         
         tabela_materias = df_filtrado.groupby('materia').agg(
