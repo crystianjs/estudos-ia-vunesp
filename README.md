@@ -9,6 +9,8 @@
 
 ## <font color="#E0533C">📁 Estrutura do Repositório</font>
 
+## Segue site em produção: https://estudos-ia-vunesp.streamlit.app/
+
 ```text
 📁 estudos-ia-vunesp (Raiz do seu GitHub)
 └── 📁 estudos-ia-vunesp/            # Pasta principal do projeto
