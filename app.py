@@ -5,7 +5,7 @@ import os
 
 # Configuração da página para visualização mobile e desktop
 st.set_page_config(
-    page_title="EstudosIA - Painel de Desempenho", 
+    page_title="EstudosIA - Dashboard de Desempenho", 
     page_icon="📊", 
     layout="centered"
 )
@@ -58,8 +58,14 @@ st.markdown("""
         text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
     }
     
-    /* Forçar a Barra de Progresso do Streamlit a ficar Vermelha */
-    div [data-testid="stProgress"] > div > div > div > div {
+    /* 🔥 Força a Barra de Progresso do Streamlit a ficar Vermelha */
+    div[data-testid="stProgress"] div div {
+        background-color: #ff3d00 !important;
+    }
+    .stProgress > div > div > div > div {
+        background-color: #ff3d00 !important;
+    }
+    div[role="progressbar"] > div {
         background-color: #ff3d00 !important;
     }
     
@@ -82,7 +88,8 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.title("📊 Painel de Desempenho Acadêmico")
+# 🔄 Título customizado com HTML para aplicar o contraste exato do anexo (Estudos em branco, IA em vermelho)
+st.markdown('<h1 style="font-size: 40px; font-weight: 800; margin-bottom: 0px;">📊 Estudos<span style="color:#ff3d00;">IA</span> - Dashboard</h1>', unsafe_allow_html=True)
 st.caption("Filtros avançados e análise simplificada por período e disciplina.")
 
 # Função para ler os dados do Supabase
@@ -150,7 +157,7 @@ try:
         
         st.write("---")
         
-        # 🎯 META SEMANAL (Agora com a barra vermelha via injeção CSS)
+        # 🎯 META SEMANAL
         st.subheader("🎯 Meta de Consistência Semanal")
         meta_semanal = 100
         progresso = min(total_questoes / meta_semanal, 1.0)
