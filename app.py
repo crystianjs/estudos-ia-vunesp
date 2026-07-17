@@ -5,31 +5,65 @@ import os
 
 # Configuração da página para visualização mobile e desktop
 st.set_page_config(
-    page_title="EstudosIA - Painel de Desempenho", 
+    page_title="EstudosIA - Dashboard de Desempenho", 
     page_icon="📊", 
     layout="centered"
 )
 
-# Estilização customizada em CSS para deixar o visual moderno
+# Estilização baseada na paleta Deep Blue / Cyber Blue do projeto
 st.markdown("""
     <style>
-    .metric-box {
-        background-color: #1e293b;
-        padding: 15px;
-        border-radius: 10px;
-        text-align: center;
-        border: 1px solid #334155;
-        margin-bottom: 10px;
+    /* Cor de fundo do app (Azul Escuro profundo) */
+    .stApp {
+        background-color: #0b0f19;
     }
-    .metric-title { color: #94a3b8; font-size: 14px; margin-bottom: 5px; }
-    .metric-value { color: #f8fafc; font-size: 28px; font-weight: bold; }
+    
+    /* Configuração dos Cards de Métricas */
+    .metric-box {
+        background-color: #111827;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        border: 1px solid rgba(0, 149, 255, 0.2);
+        box-shadow: 0 4px 20px rgba(0, 149, 255, 0.05);
+        margin-bottom: 15px;
+    }
+    .metric-title { 
+        color: #94a3b8; 
+        font-size: 14px; 
+        font-weight: 500;
+        margin-bottom: 5px; 
+    }
+    .metric-value { 
+        color: #0095ff; 
+        font-size: 32px; 
+        font-weight: bold; 
+        text-shadow: 0 0 10px rgba(0, 149, 255, 0.2);
+    }
+    
+    /* Customização dos Títulos */
+    h1, h2, h3, h4, h5, h6 {
+        color: #ffffff !important;
+        font-family: 'Poppins', sans-serif;
+    }
+    
+    /* Subtítulos */
+    .stMarkdown p {
+        color: #94a3b8;
+    }
+    
+    /* Elementos da barra lateral */
+    section[data-testid="stSidebar"] {
+        background-color: #111827 !important;
+        border-right: 1px solid rgba(0, 149, 255, 0.1);
+    }
     </style>
 """, unsafe_allow_html=True)
 
 st.title("📊 Painel de Desempenho Acadêmico")
-st.caption("Dados em tempo real integrados diretamente ao banco de dados Supabase (PostgreSQL).")
+st.caption("Filtros avançados e análise detalhada por período e disciplina.")
 
-# Função segura para ler dados do Supabase
+# Função estável para ler os dados do Supabase
 def carregar_dados():
     conn = psycopg2.connect(
         host=os.getenv("DB_HOST"),
@@ -38,8 +72,8 @@ def carregar_dados():
         password=os.getenv("DB_PASSWORD"),
         port=os.getenv("DB_PORT")
     )
-    # Busca todo o histórico de questões
-    query = "SELECT materia, acertou FROM resultados;"
+    # Puxa o histórico de questões incluindo a data de criação
+    query = "SELECT materia, acertou, data_criacao FROM resultados;"
     df = pd.read_sql_query(query, conn)
     conn.close()
     return df
@@ -48,40 +82,93 @@ try:
     df = carregar_dados()
     
     if not df.empty:
-        # 🧮 Cálculos de métricas gerais
-        total_questoes = len(df)
-        total_acertos = df[df['acertou'] == True].shape[0]
+        # Tratamento das datas para permitir filtros de mês
+        df['data_criacao'] = pd.to_datetime(df['data_criacao'])
+        
+        # Mapeamento de meses para o português
+        meses_map = {
+            1: "Janeiro", 2: "Fevereiro", 3: "Março", 4: "Abril",
+            5: "Maio", 6: "Junho", 7: "Julho", 8: "Agosto",
+            9: "Setembro", 10: "Outubro", 11: "Novembro", 12: "Dezembro"
+        }
+        df['Mes_Num'] = df['data_criacao'].dt.month
+        df['Mês'] = df['Mes_Num'].map(meses_map)
+
+        # 🎯 CRIAÇÃO DA BARRA LATERAL COM OS FILTROS
+        st.sidebar.markdown("<h2 style='color:#0095ff; font-size:22px;'>🎯 Filtros</h2>", unsafe_allow_html=True)
+        
+        # Filtro de Mês
+        meses_disponiveis = ["Todos"] + sorted(list(df['Mês'].dropna().unique()), key=lambda m: list(meses_map.values()).index(m))
+        mes_selecionado = st.sidebar.selectbox("📅 Escolha o Mês", meses_disponiveis)
+        
+        # Filtro de Matéria
+        materias_disponiveis = ["Todas"] + sorted(list(df['materia'].unique()))
+        materia_selecionada = st.sidebar.selectbox("📚 Escolha a Matéria", materias_disponiveis)
+
+        # Aplicando filtros no DataFrame de forma dinâmica
+        df_filtrado = df.copy()
+        if mes_selecionado != "Todos":
+            df_filtrado = df_filtrado[df_filtrado['Mês'] == mes_selecionado]
+        if materia_selecionada != "Todas":
+            df_filtrado = df_filtrado[df_filtrado['materia'] == materia_selecionada]
+
+        # 🧮 Recálculo das métricas com base no filtro ativo
+        total_questoes = len(df_filtrado)
+        total_acertos = df_filtrado[df_filtrado['acertou'] == True].shape[0]
+        total_erros = df_filtrado[df_filtrado['acertou'] == False].shape[0]
         taxa_acerto = (total_acertos / total_questoes) * 100 if total_questoes > 0 else 0
 
-        # 📱 Exibição dos cartões de métricas (Layout adaptável)
-        col1, col2, col3 = st.columns(3)
+        # 📱 Exibição dos cartões de métricas responsivos e dinâmicos
+        col1, col2, col3, col4 = st.columns(4)
         with col1:
-            st.markdown(f'<div class="metric-box"><div class="metric-title">Total Respondidas</div><div class="metric-value">{total_questoes}</div></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="metric-box"><div class="metric-title">Respondidas</div><div class="metric-value">{total_questoes}</div></div>', unsafe_allow_html=True)
         with col2:
-            st.markdown(f'<div class="metric-box"><div class="metric-title">Total Acertos</div><div class="metric-value">{total_acertos}</div></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="metric-box"><div class="metric-title">Acertos</div><div class="metric-value">{total_acertos}</div></div>', unsafe_allow_html=True)
         with col3:
-            st.markdown(f'<div class="metric-box"><div class="metric-title">Taxa de Acerto</div><div class="metric-value">{taxa_acerto:.1f}%</div></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="metric-box"><div class="metric-title">Erros</div><div class="metric-value">{total_erros}</div></div>', unsafe_allow_html=True)
+        with col4:
+            st.markdown(f'<div class="metric-box"><div class="metric-title">Aproveitamento</div><div class="metric-value">{taxa_acerto:.1f}%</div></div>', unsafe_allow_html=True)
         
         st.write("---")
         
-        # 📊 Análise por disciplina
-        st.subheader("📚 Rendimento por Matéria")
+        # 📊 Gráfico de barras interativo por matéria (Ciano e Azul Escuro)
+        st.subheader("📚 Gráfico de Rendimento por Disciplina")
+        df_agrupado = df_filtrado.groupby(['materia', 'acertou']).size().unstack(fill_value=0)
         
-        # Agrupa os dados para criar a matriz de acertos/erros por disciplina
-        df_agrupado = df.groupby(['materia', 'acertou']).size().unstack(fill_value=0)
-        
-        # Garante que ambas as colunas existam para não quebrar o gráfico
+        # Garante que ambas as colunas de acertos/erros existam no gráfico
         if True not in df_agrupado.columns: df_agrupado[True] = 0
         if False not in df_agrupado.columns: df_agrupado[False] = 0
-        
-        # Renomeia as colunas para exibição na legenda
         df_agrupado = df_agrupado.rename(columns={True: 'Acertos', False: 'Erros'})
         
-        # Exibe o gráfico de barras empilhadas interativo
-        st.bar_chart(df_agrupado, stack=True)
+        # Cores Cyber Blue combinando com a imagem técnica
+        st.bar_chart(df_agrupado, stack=True, color=["#00f0ff", "#1d3557"])
+
+        st.write("---")
+
+        # 📋 Tabela com a quantidade exata de erros e acertos por matéria
+        st.subheader("📝 Detalhamento por Disciplina")
         
+        # Agrupa os dados para gerar a tabela estruturada
+        tabela_materias = df_filtrado.groupby('materia').agg(
+            Total=('acertou', 'count'),
+            Acertos=('acertou', lambda x: (x == True).sum()),
+            Erros=('acertou', lambda x: (x == False).sum())
+        ).reset_index()
+        
+        # Calcula o aproveitamento percentual individual
+        tabela_materias['Aproveitamento'] = (tabela_materias['Acertos'] / tabela_materias['Total'] * 100).round(1).astype(str) + '%'
+        
+        # Renomeia colunas para melhor legibilidade
+        tabela_materias = tabela_materias.rename(columns={
+            'materia': 'Matéria',
+            'Total': 'Total Respondidas'
+        })
+        
+        # Exibe a tabela formatada de forma nativa e amigável
+        st.dataframe(tabela_materias, hide_index=True, use_container_width=True)
+
     else:
         st.info("O banco de dados está conectado, mas nenhuma questão foi registrada ainda.")
 
 except Exception as e:
-    st.error(f"Erro de conexão com o banco de dados. Verifique as credenciais. Detalhes: {e}")
+    st.error(f"Erro de conexão com o banco de dados. Verifique suas credenciais nos Secrets. Detalhes: {e}")
