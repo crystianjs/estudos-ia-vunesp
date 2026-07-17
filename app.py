@@ -120,7 +120,7 @@ try:
         # Tratamento das datas para permitir filtros de mês
         df['data_criacao'] = pd.to_datetime(df['data_criacao'])
         
-        # Mapeamento de meses para o português
+        # Mapeamento oficial de meses ordenados para o português
         meses_map = {
             1: "janeiro", 2: "fevereiro", 3: "março", 4: "abril",
             5: "maio", 6: "junho", 7: "julho", 8: "agosto",
@@ -179,27 +179,24 @@ try:
         
         st.write("---")
         
-        # 📈 TEXTO DINÂMICO CONFORME SOLICITADO: Vincula a matéria e o mês selecionado direto ao título do gráfico
-        texto_materia = "Geral" if materia_selecionada == "Todas" else materia_selecionada
-        texto_mes = "Todos os Meses" if mes_selecionado == "Todos" else mes_selecionado
+        # 📈 INDEPENDENTE DE FILTRO: Mostra sempre o progresso absoluto dos meses do ano
+        st.subheader("📈 Evolução de Estudos por Mês (Histórico Geral)")
         
-        st.subheader(f"📈 Frequência de Estudos - {texto_materia} ({texto_mes})")
+        # Aqui usamos o DataFrame original 'df', ignorando qualquer filtro ativo na lateral
+        df_agrupado_mes = df.groupby(['Mes_Num', 'Mês']).size().reset_index(name="Questões")
+        df_agrupado_mes = df_agrupado_mes.sort_values('Mes_Num')
+        df_grafico_mes = df_agrupado_mes.set_index('Mês')["Questões"]
         
-        df_frequencia = df_filtrado.copy()
-        df_frequencia['Data'] = df_frequencia['data_criacao'].dt.strftime('%d/%m')
-        
-        df_frequencia_agrupada = df_frequencia.groupby(['data_criacao', 'Data']).size().reset_index(name="Questões Respondidas")
-        df_frequencia_agrupada = df_frequencia_agrupada.sort_values('data_criacao')
-        df_barras_frequencia = df_frequencia_agrupada.set_index('Data')["Questões Respondidas"]
-        
-        if not df_barras_frequencia.empty:
-            st.bar_chart(df_barras_frequencia, color="#00ff00")
+        if not df_grafico_mes.empty:
+            st.bar_chart(df_grafico_mes, color="#00ff00")
+            meta_mensal_esperada = 400
+            st.markdown(f"💡 *Nota de Acompanhamento: A linha ideal de consistência é de **{meta_mensal_esperada} questões** por mês.*")
         else:
-            st.info("Sem dados de histórico para exibir neste período com os filtros atuais.")
+            st.info("Nenhum dado encontrado no banco de dados.")
             
         st.write("---")
         
-        # 📊 Gráfico de Rendimento por Disciplina
+        # 📊 Gráfico de Rendimento por Disciplina (Este continua respeitando os filtros)
         st.subheader("📚 Proporção de Rendimento por Disciplina")
         df_agrupado = df_filtrado.groupby(['materia', 'acertou']).size().unstack(fill_value=0)
         
