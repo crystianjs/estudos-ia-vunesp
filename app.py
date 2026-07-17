@@ -58,6 +58,11 @@ st.markdown("""
         text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
     }
     
+    /* Forçar a Barra de Progresso do Streamlit a ficar Vermelha */
+    div [data-testid="stProgress"] > div > div > div > div {
+        background-color: #ff3d00 !important;
+    }
+    
     /* Customização dos Títulos */
     h1, h2, h3, h4, h5, h6 {
         color: #ffffff !important;
@@ -145,7 +150,7 @@ try:
         
         st.write("---")
         
-        # 🎯 META SEMANAL
+        # 🎯 META SEMANAL (Agora com a barra vermelha via injeção CSS)
         st.subheader("🎯 Meta de Consistência Semanal")
         meta_semanal = 100
         progresso = min(total_questoes / meta_semanal, 1.0)
@@ -154,7 +159,7 @@ try:
         
         st.write("---")
         
-        # 📈 CORRIGIDO: Gráfico de Barras Verticais para a Frequência Diária (Muito mais limpo e legível)
+        # 📈 Gráfico de Barras Verticais para a Frequência Diária
         st.subheader("📈 Frequência de Estudos (Questões por Dia)")
         df_frequencia = df_filtrado.copy()
         df_frequencia['Data'] = df_frequencia['data_criacao'].dt.strftime('%d/%m')
