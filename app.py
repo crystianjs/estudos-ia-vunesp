@@ -145,7 +145,7 @@ try:
         
         st.write("---")
         
-        # 🎯 NOVA MÉTRICA: Barra de Progresso de Meta Semanal
+        # 🎯 META SEMANAL
         st.subheader("🎯 Meta de Consistência Semanal")
         meta_semanal = 100
         progresso = min(total_questoes / meta_semanal, 1.0)
@@ -154,20 +154,20 @@ try:
         
         st.write("---")
         
-        # 📈 Gráfico de Linha de Frequência Diária
+        # 📈 ALTERADO: Gráfico de Área para Frequência Diária (100% em português)
         st.subheader("📈 Frequência de Estudos (Questões por Dia)")
         df_frequencia = df_filtrado.copy()
         df_frequencia['Data'] = df_frequencia['data_criacao'].dt.date
-        df_linha = df_frequencia.groupby('Data').size()
+        df_area = df_frequencia.groupby('Data').size().rename("Questões Respondidas")
         
-        if not df_linha.empty:
-            st.line_chart(df_linha, color="#00ff66")
+        if not df_area.empty:
+            st.area_chart(df_area, color="#00ff66")
         else:
             st.info("Sem dados de histórico para exibir neste período.")
             
         st.write("---")
         
-        # 📊 Gráfico de barras simples e intuitivo (Verde Neon e Vermelho Alaranjado)
+        # 📊 ALTERADO: Gráfico de barras Lado a Lado (stack=False)
         st.subheader("📚 Comparativo de Rendimento por Disciplina")
         df_agrupado = df_filtrado.groupby(['materia', 'acertou']).size().unstack(fill_value=0)
         
@@ -175,11 +175,12 @@ try:
         if False not in df_agrupado.columns: df_agrupado[False] = 0
         df_agrupado = df_agrupado.rename(columns={True: 'Acertos', False: 'Erros'})
         
-        st.bar_chart(df_agrupado, stack=True, color=["#00ff66", "#ff4500"])
+        # stack=False coloca as barras uma do lado da outra
+        st.bar_chart(df_agrupado, stack=False, color=["#00ff66", "#ff4500"])
 
         st.write("---")
 
-        # 📋 Tabela com o Detalhamento
+        # 📋 TABELA ALTERADA: Sem a coluna de Aproveitamento
         st.subheader("📝 Detalhamento por Disciplina")
         
         tabela_materias = df_filtrado.groupby('materia').agg(
@@ -187,8 +188,6 @@ try:
             Acertos=('acertou', lambda x: (x == True).sum()),
             Erros=('acertou', lambda x: (x == False).sum())
         ).reset_index()
-        
-        tabela_materias['Aproveitamento'] = (tabela_materias['Acertos'] / tabela_materias['Total'] * 100).round(1).astype(str) + '%'
         
         tabela_materias = tabela_materias.rename(columns={
             'materia': 'Matéria',
