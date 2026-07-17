@@ -20,6 +20,8 @@
     │   │   └── codigo.gs            
     │   └── 📁 Frontend/             # Interface web do simulador
     │       └── index.html           
+    ├── 📁 escopo/                   # Planejamento e Documentação do Projeto
+    │   └── EstudosIA - Escopo de Projeto.pdf # Apresentação executiva em PDF
     └── 📁 power-bi/screenshots/     # Pasta do Relatório de Desempenho e Imagens
         ├── UIUX.png                 # Print de interface UX/UI
         ├── dash_1_mobile_depois.png # Dashboard Mobile - Resultado Final
