@@ -78,7 +78,7 @@ try:
         df_agrupado = df_agrupado.rename(columns={True: 'Acertos', False: 'Erros'})
         
         # Exibe o gráfico de barras empilhadas interativo
-        st.bar_chart(df_agrupado, stacked=True)
+        st.bar_chart(df_agrupado, stack=True)
         
     else:
         st.info("O banco de dados está conectado, mas nenhuma questão foi registrada ainda.")
