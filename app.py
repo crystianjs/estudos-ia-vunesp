@@ -131,7 +131,7 @@ try:
         
         st.write("---")
         
-        # 📊 Gráfico de barras interativo por matéria (Vermelho-Alaranjado Neon e Cinza Escuro)
+        # 📊 Gráfico de barras interativo por matéria (Vermelho-Alaranjado Neon e Grafite Fosco)
         st.subheader("📚 Gráfico de Rendimento por Disciplina")
         df_agrupado = df_filtrado.groupby(['materia', 'acertou']).size().unstack(fill_value=0)
         
@@ -140,8 +140,8 @@ try:
         if False not in df_agrupado.columns: df_agrupado[False] = 0
         df_agrupado = df_agrupado.rename(columns={True: 'Acertos', False: 'Erros'})
         
-        # Cores: Vermelho Alaranjado para Acertos e Azul Cinza para Erros
-        st.bar_chart(df_agrupado, stack=True, color=["#ff4500", "#2e3b4e"])
+        # Nova paleta: Vermelho-Alaranjado para Acertos e Grafite Escuro discreto para Erros
+        st.bar_chart(df_agrupado, stack=True, color=["#ff4500", "#1e2330"])
 
         st.write("---")
 
