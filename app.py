@@ -10,7 +10,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# Estilização Neon Dark com Vermelho-Alaranjado (EstudosIA)
+# Estilização Neon Dark Personalizada (EstudosIA)
 st.markdown("""
     <style>
     /* Cor de fundo do app (Preto/Azul escuro profundo) */
@@ -18,14 +18,14 @@ st.markdown("""
         background-color: #090d16;
     }
     
-    /* Configuração dos Cards de Métricas com brilho neon vermelho-alaranjado */
+    /* Configuração dos Cards de Métricas com brilho neon */
     .metric-box {
         background-color: #111422;
         padding: 20px;
         border-radius: 12px;
         text-align: center;
-        border: 1px solid rgba(255, 69, 0, 0.3);
-        box-shadow: 0 0 15px rgba(255, 69, 0, 0.15);
+        border: 1px solid rgba(255, 69, 0, 0.2);
+        box-shadow: 0 0 15px rgba(255, 69, 0, 0.1);
         margin-bottom: 15px;
     }
     .metric-title { 
@@ -38,7 +38,24 @@ st.markdown("""
         color: #ff4500; 
         font-size: 32px; 
         font-weight: bold; 
-        text-shadow: 0 0 10px rgba(255, 69, 0, 0.4);
+        text-shadow: 0 0 10px rgba(255, 69, 0, 0.3);
+    }
+    
+    /* Destaque especial em Verde Neon para a Taxa de Aproveitamento */
+    .metric-box-green {
+        background-color: #111422;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        border: 1px solid rgba(0, 255, 102, 0.2);
+        box-shadow: 0 0 15px rgba(0, 255, 102, 0.1);
+        margin-bottom: 15px;
+    }
+    .metric-value-green { 
+        color: #00ff66; 
+        font-size: 32px; 
+        font-weight: bold; 
+        text-shadow: 0 0 10px rgba(0, 255, 102, 0.4);
     }
     
     /* Customização dos Títulos */
@@ -55,7 +72,7 @@ st.markdown("""
     /* Elementos da barra lateral */
     section[data-testid="stSidebar"] {
         background-color: #111422 !important;
-        border-right: 1px solid rgba(255, 69, 0, 0.2);
+        border-right: 1px solid rgba(255, 69, 0, 0.15);
     }
     </style>
 """, unsafe_allow_html=True)
@@ -123,15 +140,29 @@ try:
         with col1:
             st.markdown(f'<div class="metric-box"><div class="metric-title">Respondidas</div><div class="metric-value">{total_questoes}</div></div>', unsafe_allow_html=True)
         with col2:
-            st.markdown(f'<div class="metric-box"><div class="metric-title">Acertos</div><div class="metric-value">{total_acertos}</div></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="metric-box"><div class="metric-title">Acertos</div><div class="metric-value" style="color:#00ff66; text-shadow: 0 0 10px rgba(0,255,102,0.3);">{total_acertos}</div></div>', unsafe_allow_html=True)
         with col3:
             st.markdown(f'<div class="metric-box"><div class="metric-title">Erros</div><div class="metric-value">{total_erros}</div></div>', unsafe_allow_html=True)
         with col4:
-            st.markdown(f'<div class="metric-box"><div class="metric-title">Aproveitamento</div><div class="metric-value">{taxa_acerto:.1f}%</div></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="metric-box-green"><div class="metric-title">Aproveitamento</div><div class="metric-value-green">{taxa_acerto:.1f}%</div></div>', unsafe_allow_html=True)
         
         st.write("---")
         
-        # 📊 Gráfico de barras interativo por matéria (Vermelho-Alaranjado Neon e Grafite Fosco)
+        # 📈 NOVO: Gráfico de Linha de Frequência Diária (Foco na Consistência)
+        st.subheader("📈 Frequência de Estudos (Questões por Dia)")
+        # Extrai apenas a data (sem a hora) para agrupar as questões do mesmo dia
+        df_frequencia = df_filtrado.copy()
+        df_frequencia['Data'] = df_frequencia['data_criacao'].dt.date
+        df_linha = df_frequencia.groupby('Data').size().rename("Volume de Questões")
+        
+        if not df_linha.empty:
+            st.line_chart(df_linha, color="#00ff66")
+        else:
+            st.info("Sem dados de histórico para exibir neste período.")
+            
+        st.write("---")
+        
+        # 📊 Gráfico de barras interativo por matéria (Verde Neon e Vermelho Alaranjado)
         st.subheader("📚 Gráfico de Rendimento por Disciplina")
         df_agrupado = df_filtrado.groupby(['materia', 'acertou']).size().unstack(fill_value=0)
         
@@ -140,8 +171,8 @@ try:
         if False not in df_agrupado.columns: df_agrupado[False] = 0
         df_agrupado = df_agrupado.rename(columns={True: 'Acertos', False: 'Erros'})
         
-        # Nova paleta: Vermelho-Alaranjado para Acertos e Grafite Escuro discreto para Erros
-        st.bar_chart(df_agrupado, stack=True, color=["#ff4500", "#1e2330"])
+        # Paleta Neon: Verde para Acertos, Vermelho-Alaranjado para Erros
+        st.bar_chart(df_agrupado, stack=True, color=["#00ff66", "#ff4500"])
 
         st.write("---")
 
