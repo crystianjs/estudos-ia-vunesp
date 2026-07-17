@@ -9,8 +9,6 @@
 
 ## <font color="#E0533C">📁 Estrutura do Repositório</font>
 
-## Segue site em produção: https://estudos-ia-vunesp.streamlit.app/
-
 ```text
 📁 estudos-ia-vunesp (Raiz do seu GitHub)
 └── 📁 estudos-ia-vunesp/            # Pasta principal do projeto
@@ -26,3 +24,5 @@
     │   └── app.py                   # Código-fonte do Dashboard Analytics (Streamlit)
     └── 📁 escopo/                   # Planejamento e Documentação do Projeto
         └── EstudosIA - Escopo de Projeto.pdf # Apresentação executiva em PDF
+
+## Segue site em produção: https://estudos-ia-vunesp.streamlit.app/
