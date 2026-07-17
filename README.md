@@ -1,6 +1,13 @@
 # estudos-ia-vunesp
+
 Simulador de questões inéditas da banca Vunesp utilizando Llama 3.3 (Groq), persistência de dados no Supabase e dashboard analítico em tempo real no Power BI Mobile.
-📁 estudos-ai-vunesp/
+
+---
+
+## 📁 Estrutura do Repositório
+
+```text
+📁 estudos-ia-vunesp
 ├── 📁 .github/                  # Configurações do GitHub (opcional)
 │   └── workflow.yml
 ├── 📁 src/                      # Código-fonte do simulador (Google Apps Script)
