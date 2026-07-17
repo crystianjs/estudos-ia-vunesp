@@ -58,15 +58,29 @@ st.markdown("""
         text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
     }
     
-    /* 🔥 Força a Barra de Progresso do Streamlit a ficar Vermelha */
+    /* 🎯 CUSTOMIZAÇÃO AVANÇADA DA BARRA DE PROGRESSO STREMLIT */
+    /* 1. Altera a cor de fundo (Trilho/Restante da Meta) para Vermelho Escuro */
+    div[data-testid="stProgress"] > div {
+        background-color: #4a1100 !important;
+        border-radius: 10px;
+    }
+    div[role="progressbar"] {
+        background-color: #4a1100 !important;
+        border-radius: 10px;
+    }
+    
+    /* 2. Altera a cor do preenchimento (Progresso Atual) para Vermelho Claro Fluorescente */
     div[data-testid="stProgress"] div div {
         background-color: #ff3d00 !important;
+        border-radius: 10px;
     }
     .stProgress > div > div > div > div {
         background-color: #ff3d00 !important;
+        border-radius: 10px;
     }
     div[role="progressbar"] > div {
         background-color: #ff3d00 !important;
+        border-radius: 10px;
     }
     
     /* Customização dos Títulos */
@@ -88,7 +102,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 🔄 Título customizado com HTML para aplicar o contraste exato do anexo (Estudos em branco, IA em vermelho)
+# Título customizado com HTML para aplicar o contraste do logotipo (Estudos em branco, IA em vermelho)
 st.markdown('<h1 style="font-size: 40px; font-weight: 800; margin-bottom: 0px;">📊 Estudos<span style="color:#ff3d00;">IA</span> - Dashboard</h1>', unsafe_allow_html=True)
 st.caption("Filtros avançados e análise simplificada por período e disciplina.")
 
@@ -157,7 +171,7 @@ try:
         
         st.write("---")
         
-        # 🎯 META SEMANAL
+        # 🎯 META SEMANAL (Preenchimento Vermelho Claro sobre base Vermelho Escuro)
         st.subheader("🎯 Meta de Consistência Semanal")
         meta_semanal = 100
         progresso = min(total_questoes / meta_semanal, 1.0)
